@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     # third-party
     # ...
     # local
+    'myproject.apps.entities',
+    'myproject.apps.events',
     # ...
 ]
 
