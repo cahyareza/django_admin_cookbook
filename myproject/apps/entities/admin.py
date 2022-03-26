@@ -33,11 +33,13 @@ class IsVeryBenevolentFilter(admin.SimpleListFilter):
 
 @admin.register(Hero)
 class HeroAdmin(admin.ModelAdmin):
-    list_display = ("name", "is_immortal", "category", "origin")
+    list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
 
     def is_very_benevolent(self, obj):
         return obj.benevolent_factor > 75
+
+    is_very_benevolent.boolean = True
 
 @admin.register(Origin)
 class OriginAdmin(admin.ModelAdmin):
