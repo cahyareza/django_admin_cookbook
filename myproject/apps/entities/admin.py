@@ -4,7 +4,9 @@ from django.contrib import admin
 from django.db.models import Count
 from .models import Category, Origin, Hero, Villain
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import path
+
 # Unregister your models here.
 admin.site.unregister(User)
 admin.site.unregister(Group)
@@ -57,6 +59,27 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["mark_immortal", "export_as_csv"]
+
+    change_list_template = "entities/heroes_changelist.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('immortal/', self.set_immortal),
+            path('mortal/', self.set_mortal),
+        ]
+
+        return my_urls + urls
+
+    def set_immortal(self, request):
+        self.model.objects.all().update(is_immortal=True)
+        self.message_user(request, "All heroes are now immortal")
+        return HttpResponseRedirect("../")
+
+    def set_mortal(self, request):
+        self.model.objects.all().update(is_immortal=False)
+        self.message_user(request, "All heroes are now mortal")
+        return HttpResponseRedirect("../")
 
     def mark_immortal(self, request, queryset):
         queryset.update(is_immortal=True)
