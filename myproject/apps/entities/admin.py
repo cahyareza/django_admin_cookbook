@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from .models import Category, Origin, Hero, Villain
 from django.contrib.auth.models import User, Group
 
@@ -29,3 +30,6 @@ class OriginAdmin(admin.ModelAdmin):
 
     def villain_count(self, obj):
         return obj._villain_count
+
+    # hero_count.admin_order_field = "_hero_count"
+    # villain_count.admin_order_field = "_villain_count"
