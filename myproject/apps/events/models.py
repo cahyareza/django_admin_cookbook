@@ -18,6 +18,9 @@ class EventHero(models.Model):
     hero = models.ForeignKey(Hero, on_delete=models.CASCADE)
     is_primary = models.BooleanField()
 
+    class Meta:
+        verbose_name_plural = "Event heroes"
+
 
 class EventVillain(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
