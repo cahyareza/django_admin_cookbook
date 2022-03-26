@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 from .apps.events.admin import event_admin_site
+from django.conf import settings
+from django.conf.urls.static import static
 
 admin.site.site_header = "UMSRA Admin"
 admin.site.site_title = "UMSRA Admin Portal"
