@@ -16,8 +16,16 @@ admin.site.register(Villain)
 class OriginAdmin(admin.ModelAdmin):
     list_display = ("name", "hero_count", "villain_count")
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(
+            _hero_count = Count("hero", distinct=True),
+            _villain_count = Count("villain", distinct=True),
+        )
+        return queryset
+
     def hero_count(self, obj):
-        return obj.hero_set.count()
+        return obj._hero_count
 
     def villain_count(self, obj):
-        return obj.villain_set.count()
+        return obj._villain_count
