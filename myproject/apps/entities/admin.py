@@ -61,6 +61,12 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     def mark_immortal(self, request, queryset):
         queryset.update(is_immortal=True)
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
     def is_very_benevolent(self, obj):
         return obj.benevolence_factor > 75
 
