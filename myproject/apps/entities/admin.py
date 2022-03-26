@@ -1,8 +1,10 @@
+import csv
+
 from django.contrib import admin
 from django.db.models import Count
 from .models import Category, Origin, Hero, Villain
 from django.contrib.auth.models import User, Group
-
+from django.http import HttpResponse
 # Unregister your models here.
 admin.site.unregister(User)
 admin.site.unregister(Group)
@@ -10,7 +12,7 @@ admin.site.unregister(Group)
 # Register your models here.
 admin.site.register(Category)
 # admin.site.register(Hero)
-admin.site.register(Villain)
+# admin.site.register(Villain)
 
 class IsVeryBenevolentFilter(admin.SimpleListFilter):
     title = "is_very_benevolent"
@@ -30,12 +32,31 @@ class IsVeryBenevolentFilter(admin.SimpleListFilter):
             return queryset.exclude(benevolence_factor__gt=75)
         return queryset
 
+class ExportCsvMixin:
+
+    def export_as_csv(self, request, queryset):
+
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            row = writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
+
+    export_as_csv.short_description = "Export Selected"
+
 
 @admin.register(Hero)
-class HeroAdmin(admin.ModelAdmin):
+class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
-    actions = ["mark_immortal"]
+    actions = ["mark_immortal", "export_as_csv"]
 
     def mark_immortal(self, request, queryset):
         queryset.update(is_immortal=True)
@@ -65,3 +86,8 @@ class OriginAdmin(admin.ModelAdmin):
 
     hero_count.admin_order_field = "_hero_count"
     villain_count.admin_order_field = "_villain_count"
+
+@admin.register(Villain)
+class VillainAdmin(admin.ModelAdmin, ExportCsvMixin):
+    list_display = ("name", "category", "origin")
+    actions = ["export_as_csv"]
