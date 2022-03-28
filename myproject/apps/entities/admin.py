@@ -1,4 +1,5 @@
 import csv
+import sys
 
 from django import forms
 from django.contrib import admin
@@ -73,7 +74,7 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["mark_immortal", "export_as_csv"]
     inlines = [HeroAcquaintanceInline]
-    list_per_page = 3
+    list_per_page = sys.maxsize
 
     change_list_template = "entities/admin_changelist.html"
 
