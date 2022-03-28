@@ -60,6 +60,10 @@ class HeroAcquaintanceInline(admin.TabularInline):
     "Non family contacts of a hero"
     model = HeroAcquaintance
 
+class CategoryChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "Category: {}".format(obj.name)
+
 class HeroForm(forms.ModelForm):
     category_name = forms.CharField()
 
@@ -83,11 +87,22 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     change_list_template = "entities/admin_changelist.html"
 
-    def get_readonly_fields(self, request, obj=None):
-        if obj:
-            return ["name", "category"]
-        else:
-            return []
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == "category":
+    #         kwargs["queryset"] = Category.objects.filter(name__in=['Marvel', 'Wayang'])
+    #
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    # def get_readonly_fields(self, request, obj=None):
+    #     if obj:
+    #         return ["name", "category"]
+    #     else:
+    #         return []
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'category':
+            return CategoryChoiceField(queryset=Category.objects.all())
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def headshot_image(self, obj):
         return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
