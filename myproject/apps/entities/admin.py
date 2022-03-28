@@ -75,6 +75,7 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ["mark_immortal", "export_as_csv"]
     inlines = [HeroAcquaintanceInline]
     list_per_page = sys.maxsize
+    date_hierarchy = 'added_on'
 
     change_list_template = "entities/admin_changelist.html"
 
