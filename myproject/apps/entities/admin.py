@@ -83,6 +83,12 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     change_list_template = "entities/admin_changelist.html"
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["name", "category"]
+        else:
+            return []
+
     def headshot_image(self, obj):
         return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
             url = obj.headshot.url,
