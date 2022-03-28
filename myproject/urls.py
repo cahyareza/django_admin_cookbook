@@ -27,6 +27,6 @@ admin.site.index_title = "Welcome to UMSRA Researcher Portal"
 
 urlpatterns = i18n_patterns(
     path('', TemplateView.as_view(template_name="index.html")),
-    path('entity-admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('event-admin/', event_admin_site.urls),
 )

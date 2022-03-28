@@ -8,11 +8,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 
 # Unregister your models here.
-admin.site.unregister(User)
-admin.site.unregister(Group)
+# admin.site.unregister(User)
+# admin.site.unregister(Group)
 
 # Register your models here.
-admin.site.register(Category)
+# admin.site.register(Category)
 # admin.site.register(Hero)
 # admin.site.register(Villain)
 
@@ -60,7 +60,7 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["mark_immortal", "export_as_csv"]
 
-    change_list_template = "entities/heroes_changelist.html"
+    change_list_template = "entities/admin_changelist.html"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -120,3 +120,12 @@ class OriginAdmin(admin.ModelAdmin):
 class VillainAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ("name", "category", "origin")
     actions = ["export_as_csv"]
+
+
+class VillainInline(admin.StackedInline):
+    model = Villain
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+
+    inlines = [VillainInline,]
