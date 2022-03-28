@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.conf import settings
+
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -42,8 +44,14 @@ class Entity(models.Model):
 
     description = models.TextField()
 
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+        null=True, blank=True, on_delete=models.SET_NULL)
+
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return self.name
 
 class Hero(Entity):
     is_immortal = models.BooleanField(default=True)
@@ -62,22 +70,13 @@ class Hero(Entity):
         "self", related_name="children", null=True, blank=True, on_delete=models.SET_NULL
     )
 
-    def __str__(self):
-        return self.name
-
     mother = models.ForeignKey(
         "self", related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
 
-    def __str__(self):
-        return self.name
-
     spouse = models.ForeignKey(
         "self", related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         verbose_name_plural = "Heroes"

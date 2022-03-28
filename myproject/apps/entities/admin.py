@@ -71,12 +71,13 @@ class HeroForm(forms.ModelForm):
 class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     # form = HeroForm
 
-    list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent", "children_display")
+    list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent", "children_display", 'added_by')
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["mark_immortal", "export_as_csv"]
     inlines = [HeroAcquaintanceInline]
     list_per_page = sys.maxsize
     readonly_fields = ["headshot_image"]
+    exclude = ['added_by', ]
     # date_hierarchy = 'added_on'
 
     change_list_template = "entities/admin_changelist.html"
@@ -115,14 +116,14 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
         self.message_user(request, "All heroes are now mortal")
         return HttpResponseRedirect("../")
 
-    # def save_model(self, request, obj, form, change):
-    #     category_name = form.cleaned_data["category_name"]
-    #     if not obj.pk:
-    #         # Only set added_by during the first save.
-    #         obj.added_by = request.user
-    #     category, _ = Category.objects.get_or_create(name=category_name)
-    #     obj.category = category
-    #     super().save_model(request, obj, form, change)
+    def save_model(self, request, obj, form, change):
+        category_name = form.cleaned_data["category_name"]
+        if not obj.pk:
+            # Only set added_by during the first save.
+            obj.added_by = request.user
+        category, _ = Category.objects.get_or_create(name=category_name)
+        obj.category = category
+        super().save_model(request, obj, form, change)
 
     def mark_immortal(self, request, queryset):
         queryset.update(is_immortal=True)
