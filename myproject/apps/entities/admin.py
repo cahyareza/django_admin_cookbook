@@ -78,6 +78,7 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_per_page = sys.maxsize
     readonly_fields = ["headshot_image"]
     exclude = ['added_by', ]
+    readonly_fields = ["father", "mother", "spouse"]
     # date_hierarchy = 'added_on'
 
     change_list_template = "entities/admin_changelist.html"
