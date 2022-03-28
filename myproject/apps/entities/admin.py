@@ -70,14 +70,20 @@ class HeroForm(forms.ModelForm):
 class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     # form = HeroForm
 
-    list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
+    list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent", "children_display")
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["mark_immortal", "export_as_csv"]
     inlines = [HeroAcquaintanceInline]
     list_per_page = sys.maxsize
-    date_hierarchy = 'added_on'
+    # date_hierarchy = 'added_on'
 
     change_list_template = "entities/admin_changelist.html"
+
+    def children_display(self, obj):
+        return ", ".join([
+            child.name for child in obj.children.all()
+        ])
+    children_display.short_description = "Children"
 
     def get_urls(self):
         urls = super().get_urls()
