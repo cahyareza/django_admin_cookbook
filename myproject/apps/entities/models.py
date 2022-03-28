@@ -58,12 +58,23 @@ class Hero(Entity):
     father = models.ForeignKey(
         "self", related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
+
+    def __str__(self):
+        return self.name
+
     mother = models.ForeignKey(
         "self", related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
+
+    def __str__(self):
+        return self.name
+
     spouse = models.ForeignKey(
         "self", related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name_plural = "Heroes"
@@ -79,3 +90,7 @@ class Villain(Entity):
     )
     is_unique = models.BooleanField(default=True)
     count = models.PositiveSmallIntegerField(default=1)
+
+class HeroAcquaintance(models.Model):
+    "Non family contacts of a Hero"
+    hero = models.OneToOneField(Hero, on_delete=models.CASCADE)

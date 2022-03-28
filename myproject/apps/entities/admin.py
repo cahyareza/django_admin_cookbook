@@ -2,7 +2,7 @@ import csv
 
 from django.contrib import admin
 from django.db.models import Count
-from .models import Category, Origin, Hero, Villain
+from .models import Category, Origin, Hero, Villain, HeroAcquaintance
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
@@ -53,12 +53,16 @@ class ExportCsvMixin:
 
     export_as_csv.short_description = "Export Selected"
 
+class HeroAcquaintanceInline(admin.TabularInline):
+    "Non family contacts of a hero"
+    model = HeroAcquaintance
 
 @admin.register(Hero)
 class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
     list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["mark_immortal", "export_as_csv"]
+    inlines = [HeroAcquaintanceInline]
 
     change_list_template = "entities/admin_changelist.html"
 
