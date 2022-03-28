@@ -7,6 +7,7 @@ from django.db.models import Count
 from .models import Category, Origin, Hero, Villain, HeroAcquaintance
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.safestring import mark_safe
 from django.urls import path
 
 # Unregister your models here.
@@ -75,9 +76,19 @@ class HeroAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ["mark_immortal", "export_as_csv"]
     inlines = [HeroAcquaintanceInline]
     list_per_page = sys.maxsize
+    readonly_fields = ["headshot_image"]
     # date_hierarchy = 'added_on'
 
     change_list_template = "entities/admin_changelist.html"
+
+    def headshot_image(self, obj):
+        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+            url = obj.headshot.url,
+            width=obj.headshot.width,
+            height=obj.headshot.height,
+            )
+    )
+
 
     def children_display(self, obj):
         return ", ".join([
